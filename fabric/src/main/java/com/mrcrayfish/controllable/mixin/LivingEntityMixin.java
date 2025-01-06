@@ -20,7 +20,8 @@ public class LivingEntityMixin
         if(!stack.isEmpty())
         {
             LivingEntity entity = (LivingEntity) (Object) this;
-            RumbleHandler.onPlayerUsingItem(entity, stack, entity.getUseItemRemainingTicks());
+            // TODO reimplement rumble support
+            //RumbleHandler.onPlayerUsingItem(entity, stack, entity.getUseItemRemainingTicks());
         }
     }
 }

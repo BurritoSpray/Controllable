@@ -311,9 +311,8 @@ public class ControllerInput
             }
 
             this.cursorX += cursorSpeed * this.cursorSpeedX;
-            this.cursorX = Mth.clamp(this.cursorX, 0, mc.getWindow().getWidth());
             this.cursorY += cursorSpeed * this.cursorSpeedY;
-            this.cursorY = Mth.clamp(this.cursorY, 0, mc.getWindow().getHeight());
+            // TODO reimplement clamping to window size
             this.setControllerInUse();
             this.moved = true;
             this.hideVirtualCursor = false;

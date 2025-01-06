@@ -14,6 +14,5 @@ public class ClientBootstrap
         Controllable.init();
         ControllerEvents.init();
         OverlayHandler.init();
-        RumbleHandler.init();
     }
 }
