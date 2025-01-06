@@ -22,7 +22,7 @@ public class CursorOverlay implements IOverlay
     @Override
     public boolean isVisible()
     {
-        return Minecraft.getInstance().screen != null && Config.CLIENT.client.options.virtualCursor.get() && Controllable.getController() != null && Controllable.getInput().getLastUse() > 0 && !Controllable.getInput().isVirtualCursorHidden();
+        return Minecraft.getInstance().getOverlay() == null && Minecraft.getInstance().screen != null && Config.CLIENT.client.options.virtualCursor.get() && Controllable.getController() != null && Controllable.getInput().getLastUse() > 0 && !Controllable.getInput().isVirtualCursorHidden();
     }
 
     @Override
@@ -30,8 +30,9 @@ public class CursorOverlay implements IOverlay
     {
         PoseStack pose = graphics.pose();
         pose.pushPose();
-        CursorType type = Config.CLIENT.client.options.cursorType.get();
+
         Minecraft mc = Minecraft.getInstance();
+        CursorType type = Config.CLIENT.client.options.cursorType.get();
         if(mc.player == null || (mc.player.inventoryMenu.getCarried().isEmpty() || type.getBehaviour() == ItemHeldBehaviour.SHOW))
         {
             ControllerInput input = Controllable.getInput();

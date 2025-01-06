@@ -12,13 +12,11 @@ import java.util.Set;
  */
 public class ControllableMixinPlugin implements IMixinConfigPlugin
 {
-    private boolean optifineLoaded;
     private boolean frameworkLoaded;
 
     @Override
     public void onLoad(String mixinPackage)
     {
-        this.optifineLoaded = this.isClassAvailable("optifine.Installer");
         this.frameworkLoaded = this.isClassAvailable("com.mrcrayfish.framework.Constants");
     }
 
@@ -32,18 +30,11 @@ public class ControllableMixinPlugin implements IMixinConfigPlugin
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName)
     {
         // Prevent any loading of mixins if Framework is not installed.
-        if(!this.frameworkLoaded)
-        {
-            return false;
-        }
-        return this.optifineLoaded ? !mixinClassName.equals("com.mrcrayfish.controllable.mixin.client.GameRendererMixin") : !mixinClassName.equals("com.mrcrayfish.controllable.mixin.client.OptifineGameRendererMixin");
+        return this.frameworkLoaded;
     }
 
     @Override
-    public void acceptTargets(Set<String> myTargets, Set<String> otherTargets)
-    {
-
-    }
+    public void acceptTargets(Set<String> myTargets, Set<String> otherTargets) {}
 
     @Override
     public List<String> getMixins()
@@ -52,16 +43,10 @@ public class ControllableMixinPlugin implements IMixinConfigPlugin
     }
 
     @Override
-    public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo)
-    {
-
-    }
+    public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
 
     @Override
-    public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo)
-    {
-
-    }
+    public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
 
     private boolean isClassAvailable(String className)
     {
