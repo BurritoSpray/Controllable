@@ -33,7 +33,7 @@ dependencies {
         transitive(false)
     }
     implementation "com.google.code.findbugs:jsr305:3.0.2"
-    implementation project(":Common")
+    implementation project(":common")
     testModImplementation sourceSets.main.output
     testModImplementation sourceSets.test.output
 }
@@ -65,7 +65,7 @@ loom {
 }
 
 processResources {
-    from project(":Common").sourceSets.main.resources
+    from project(":common").sourceSets.main.resources
     inputs.property "version", project.version
 
     filesMatching("fabric.mod.json") {
@@ -87,7 +87,7 @@ task releaseJar(type: RemapJarTask) {
 build.finalizedBy(releaseJar)
 
 tasks.withType(JavaCompile) {
-    source(project(":Common").sourceSets.main.allSource)
+    source(project(":common").sourceSets.main.allSource)
 }
 
 publishing {
