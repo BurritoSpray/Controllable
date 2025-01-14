@@ -13,11 +13,18 @@ import com.mrcrayfish.controllable.client.util.ClientHelper;
 import com.mrcrayfish.controllable.client.util.ReflectUtil;
 import com.mrcrayfish.controllable.event.ControllerEvent;
 import com.mrcrayfish.controllable.event.GatherNavigationPointsEvent;
+import com.mrcrayfish.controllable.integration.ControllableEmiPlugin;
 import com.mrcrayfish.controllable.integration.ControllableJeiPlugin;
 import com.mrcrayfish.controllable.mixin.client.CreativeModeInventoryScreenMixin;
 import com.mrcrayfish.controllable.mixin.client.OverlayRecipeComponentAccessor;
 import com.mrcrayfish.controllable.mixin.client.RecipeBookComponentAccessor;
 import com.mrcrayfish.controllable.mixin.client.RecipeBookPageAccessor;
+import dev.emi.emi.api.EmiApi;
+import dev.emi.emi.api.stack.EmiIngredient;
+import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.config.SidebarType;
+import dev.emi.emi.screen.EmiScreenManager;
+import dev.emi.emi.screen.RecipeScreen;
 import net.minecraft.Util;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -667,6 +674,9 @@ public class ControllerInput
         Minecraft mc = Minecraft.getInstance();
         if(state)
         {
+            if (ControllableEmiPlugin.isEmi())
+                ControllableEmiPlugin.handleButtonInput(this, controller, button, state, virtual);
+
             if(ButtonBindings.FULLSCREEN.isButtonPressed())
             {
                 mc.getWindow().toggleFullScreen();
@@ -897,7 +907,7 @@ public class ControllerInput
                 {
                     this.navigateMouse(mc.screen, Navigate.RIGHT);
                 }
-                else if(button == ButtonBindings.PICKUP_ITEM.getButton())
+                else if(ButtonBindings.PICKUP_ITEM.isButtonPressed())
                 {
                     invokeMouseClick(mc.screen, 0);
 
@@ -915,7 +925,7 @@ public class ControllerInput
                 {
                     invokeMouseClick(mc.screen, 1);
                 }
-                else if(button == ButtonBindings.QUICK_MOVE.getButton() && mc.player != null)
+                else if(ButtonBindings.QUICK_MOVE.isButtonPressed() && mc.player != null)
                 {
                     if(mc.player.inventoryMenu.getCarried().isEmpty())
                     {
@@ -1045,6 +1055,8 @@ public class ControllerInput
         Vector3d mousePos = new Vector3d(mouseX, mouseY, 0);
         Optional<NavigationPoint> minimumPointOptional = points.stream().min(navigate.getMinComparator(mouseX, mouseY));
         double minimumDelta = navigate.getKeyExtractor().apply(minimumPointOptional.get(), mousePos) + 10;
+        // TODO: check for the nearest point in a radius to prevent cursor from moving across the screen
+        //       when the navigation point is slightly higher or lower than the current one
         Optional<NavigationPoint> targetPointOptional = points.stream().filter(point -> navigate.getKeyExtractor().apply(point, mousePos) <= minimumDelta).min(Comparator.comparing(p -> p.distanceTo(mouseX, mouseY)));
         if(targetPointOptional.isPresent())
         {
@@ -1176,7 +1188,10 @@ public class ControllerInput
             }
         }
 
-        if(Controllable.isJeiLoaded() && ClientHelper.isPlayingGame())
+        if (ControllableEmiPlugin.isEmi())
+        {
+            points.addAll(ControllableEmiPlugin.getNavigationPoints());
+        } else if (Controllable.isJeiLoaded() && ClientHelper.isPlayingGame())
         {
             points.addAll(ControllableJeiPlugin.getNavigationPoints());
         }
@@ -1387,7 +1402,7 @@ public class ControllerInput
         }
     }
 
-    private double getMouseX()
+    public double getMouseX()
     {
         Minecraft mc = Minecraft.getInstance();
         double mouseX = mc.mouseHandler.xpos();
@@ -1398,7 +1413,7 @@ public class ControllerInput
         return mouseX * (double) mc.getWindow().getGuiScaledWidth() / (double) mc.getWindow().getWidth();
     }
 
-    private double getMouseY()
+    public double getMouseY()
     {
         Minecraft mc = Minecraft.getInstance();
         double mouseY = mc.mouseHandler.ypos();

@@ -9,8 +9,12 @@ import com.mrcrayfish.controllable.client.util.ClientHelper;
 import com.mrcrayfish.controllable.event.GatherActionsEvent;
 import com.mrcrayfish.controllable.event.RenderAvailableActionsEvent;
 import com.mrcrayfish.controllable.event.RenderPlayerPreviewEvent;
+import com.mrcrayfish.controllable.integration.ControllableEmiPlugin;
 import com.mrcrayfish.controllable.mixin.client.RecipeBookComponentAccessor;
 import com.mrcrayfish.controllable.mixin.client.RecipeBookPageAccessor;
+import dev.emi.emi.api.widget.Bounds;
+import dev.emi.emi.registry.EmiExclusionAreas;
+import dev.emi.emi.screen.EmiScreenBase;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -19,6 +23,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.StateSwitchingButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookPage;
@@ -38,6 +43,7 @@ import net.minecraftforge.client.event.ContainerScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.forgespi.locating.ForgeFeature;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -309,8 +315,10 @@ public class RenderEvents
                 int texV = Config.CLIENT.options.controllerIcons.get().ordinal() * 13;
                 int size = 13;
 
+                // TODO: Move this into a method in the EMI integration code
+                int emiPadding = ControllableEmiPlugin.isEmi() && mc.screen instanceof InventoryScreen || mc.screen instanceof ContainerScreen ? 25 : 0;
                 int x = side == Action.Side.LEFT ? 5 : mc.getWindow().getGuiScaledWidth() - 5 - size; //TODO test
-                int y = mc.getWindow().getGuiScaledHeight() + (side == Action.Side.LEFT ? leftIndex : rightIndex) * -15 - size - 5;
+                int y = mc.getWindow().getGuiScaledHeight() + (side == Action.Side.LEFT ? leftIndex : rightIndex) * -15 - size - 5 - (side == Action.Side.LEFT ? emiPadding : 0);
 
                 RenderSystem.setShaderTexture(0, CONTROLLER_BUTTONS);
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
